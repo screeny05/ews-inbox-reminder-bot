@@ -113,7 +113,7 @@ class EwsClient {
     }
 
     const ews = new EwsClient(EWS_USER, EWS_PASS, EWS_HOST);
-    const searchResults = await ews.findCalendarItems('calendar', calendarViewFactory(startDate, endDate, 30));
+    const searchResults = await ews.findCalendarItems('calendar', calendarViewFactory(startDate, endDate, process.env.CHECK_ITEMS || 30));
     const items = await ews.getCalendarItems(searchResults, ['item:Subject', 'item:ReminderIsSet', 'calendar:InboxReminders', 'calendar:CalendarItemType']);
 
     // add reminder only for items which
