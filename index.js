@@ -113,10 +113,16 @@ class EwsClient {
     }
 
     const ews = new EwsClient(EWS_USER, EWS_PASS, EWS_HOST);
-    const searchResults = await ews.findCalendarItems('calendar', calendarViewFactory(startDate, endDate, 100));
+    const searchResults = await ews.findCalendarItems('calendar', calendarViewFactory(startDate, endDate, 30));
     const items = await ews.getCalendarItems(searchResults, ['item:Subject', 'item:ReminderIsSet', 'calendar:InboxReminders', 'calendar:CalendarItemType']);
 
-    const addInboxReminderIds = items.filter(item => !item.InboxReminders && item.ReminderIsSet === 'true' && item.CalendarItemType !== 'Occurrence');
-    debug(addInboxReminderIds)
-    //await ews.addInboxReminder(searchResults)
+    // add reminder only for items which
+    // * not have an inboxreminder already
+    // * have a notification
+    // * are not recurring events
+    const addInboxReminderItems = items.filter(item => !item.InboxReminders && item.ReminderIsSet === 'true' && item.CalendarItemType !== 'Occurrence');
+
+    console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '))
+
+    await ews.addInboxReminder(addInboxReminderItems)
 })();
