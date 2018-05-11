@@ -1,0 +1,11 @@
+{
+  "name": "ews-inbox-reminder-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "Sebastian Langer <sl@scn.cx>",
+  "license": "MIT",
+  "dependencies": {
+    "node-ews": "^3.2.4"
+  }
+}
