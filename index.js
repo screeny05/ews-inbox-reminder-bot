@@ -122,7 +122,11 @@ class EwsClient {
     // * are not recurring events
     const addInboxReminderItems = items.filter(item => !item.InboxReminders && item.ReminderIsSet === 'true' && item.CalendarItemType !== 'Occurrence');
 
-    console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '))
+    if(addInboxReminderItems.length > 0){
+        console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '))
+        await ews.addInboxReminder(addInboxReminderItems)
+    } else {
+        console.log('no reminder to set')
+    }
 
-    await ews.addInboxReminder(addInboxReminderItems)
 })();
