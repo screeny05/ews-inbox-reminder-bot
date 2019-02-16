@@ -121,7 +121,7 @@ class EwsClient {
     // * not have an inboxreminder already
     // * have a notification
     // * are not recurring events
-    const addInboxReminderItems = items.filter(item => !item.InboxReminders && item.ReminderIsSet === 'true' && item.CalendarItemType !== 'Occurrence');
+    const addInboxReminderItems = items.filter(item => !item.InboxReminders && item.CalendarItemType !== 'Occurrence');
 
     if(addInboxReminderItems.length > 0){
         console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '));
