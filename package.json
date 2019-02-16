@@ -6,6 +6,7 @@
   "author": "Sebastian Langer <sl@scn.cx>",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "^6.2.0",
     "node-ews": "^3.2.4"
   }
 }

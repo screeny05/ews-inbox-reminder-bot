@@ -1,6 +1,8 @@
 const EWS = require('node-ews');
+const { inspect } = require('util');
+require('dotenv').config();
 
-const debug = (...obj) => console.log(require('util').inspect(...obj, false, Infinity, true));
+const debug = obj => console.log(inspect(obj, false, Infinity, true));
 
 const itemShapeFactory = attributes => ({
     't:BaseShape': 'IdOnly',
@@ -22,8 +24,8 @@ const calendarViewFactory = (start, end, maxEntries) => ({
 });
 
 class EwsClient {
-    constructor(username, password, host){
-        this.ews = new EWS({ username, password, host });
+    constructor(username, password, host, auth = 'basic'){
+        this.ews = new EWS({ username, password, host, auth });
     }
 
     async _invoke(method, data){
@@ -101,18 +103,17 @@ class EwsClient {
     }
 }
 
-
 (async () => {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 30);
 
-    const { EWS_USER, EWS_PASS, EWS_HOST } = process.env;
+    const { EWS_USER, EWS_PASS, EWS_HOST, EWS_AUTH } = process.env;
     if(!EWS_USER || !EWS_PASS || !EWS_HOST){
         throw new Error('Required env-params missing - EWS_USER, EWS_PASS, EWS_HOST');
     }
 
-    const ews = new EwsClient(EWS_USER, EWS_PASS, EWS_HOST);
+    const ews = new EwsClient(EWS_USER, EWS_PASS, EWS_HOST, EWS_AUTH);
     const searchResults = await ews.findCalendarItems('calendar', calendarViewFactory(startDate, endDate, process.env.CHECK_ITEMS || 30));
     const items = await ews.getCalendarItems(searchResults, ['item:Subject', 'item:ReminderIsSet', 'calendar:InboxReminders', 'calendar:CalendarItemType']);
 
@@ -123,10 +124,10 @@ class EwsClient {
     const addInboxReminderItems = items.filter(item => !item.InboxReminders && item.ReminderIsSet === 'true' && item.CalendarItemType !== 'Occurrence');
 
     if(addInboxReminderItems.length > 0){
-        console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '))
-        await ews.addInboxReminder(addInboxReminderItems)
+        console.log('adding reminder for:\n* ' + addInboxReminderItems.map(item => item.Subject).join('\n* '));
+        await ews.addInboxReminder(addInboxReminderItems);
     } else {
-        console.log('no reminder to set')
+        console.log('no reminder to set');
     }
 
 })();
